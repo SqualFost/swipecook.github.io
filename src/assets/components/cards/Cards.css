@@ -1,0 +1,26 @@
+.tinder-card {
+    border-radius: 15px; /* Coins arrondis */
+    overflow: hidden; /* Pour éviter que les images débordent */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Ombre */
+    transition: transform 0.3s ease; /* Transition douce */
+  }
+  
+  .tinder-card:hover {
+    transform: scale(1.05); /* Légère augmentation de la taille au survol */
+  }
+  
+  .card-image {
+    height: 300px; /* Hauteur fixe pour l'image */
+    object-fit: cover; /* Couvrir tout l'espace sans déformer l'image */
+  }
+  
+  .card-title {
+    font-size: 1.5rem; /* Taille de police pour le titre */
+    font-weight: bold; /* Gras */
+  }
+  
+  .button-group {
+    display: flex; /* Aligne les boutons horizontalement */
+    justify-content: center; /* Centre les boutons */
+  }
+  
