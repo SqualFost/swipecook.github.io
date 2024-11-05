@@ -1,20 +1,29 @@
 import { Button } from "@/components/ui/button"
-import { Home, Settings } from "lucide-react"
+import { Home, Search, Settings } from "lucide-react"
 import Link from 'next/link'
 
 export default function Navbar() {
   return (
-    <nav className="bg-card rounded-full shadow-lg p-2 flex justify-around">
-      <Link href="/">
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <Home className="h-6 w-6" />
-        </Button>
-      </Link>
-      <Link href="/settings">
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <Settings className="h-6 w-6" />
-        </Button>
-      </Link>
-    </nav>
+    <div className="fixed bottom-0 left-0 right-0 pb-4 pt-10 bg-gradient-to-t from-background via-background to-transparent">
+        <nav className="bg-card rounded-full shadow-lg">
+          <div className="flex justify-around p-2">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Home className="h-6 w-6" />
+              </Button>
+            </Link>
+            <Link href="/search">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Search className="h-6 w-6" />
+              </Button>
+            </Link>
+            <Link href="/settings">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Settings className="h-6 w-6" />
+              </Button>
+            </Link>
+          </div>
+        </nav>
+      </div>
   )
 }

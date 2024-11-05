@@ -24,9 +24,6 @@ export default function AccountSettings() {
           <Button type="submit" className="w-full">Sauvegarder les changements</Button>
         </form>
       </main>
-      <div className="p-4 bg-background">
-        <Navbar />
-      </div>
     </div>
   )
 }
