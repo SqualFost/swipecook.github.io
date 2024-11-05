@@ -10,44 +10,121 @@ type Recipe = {
 }
 
 type Meal = {
-  id: number
-  name: string
-  nationalite: string
-  recette: Recipe
-  image: string
+  id: number;
+  name: string;
+  nationalite: string;
+  recette: Recipe;
+  image: string;
+  preferenceScore: number; // Score de préférence
+  hasMeat: boolean; // Indique si le plat contient de la viande
+  meatType: string | null; // Type de viande utilisé (ex: "boeuf", "poulet", "poisson")
+  origin: string; // Origine du plat (ex: "Italien", "Mexicain")
 }
 
 export default function MealLike() {
   const [meals, setMeals] = useState<Meal[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [likeCount, setLikeCount] = useState(0) // Compteur de likes
+  const [preferences, setPreferences] = useState({
+    origin: new Set<string>(),
+    hasMeat: null as boolean | null,
+    meatTypes: new Set<string>()
+  })
+  const [isInitialDiscovery, setIsInitialDiscovery] = useState(true) // Phase de découverte initiale
 
   useEffect(() => {
     const fetchMeals = async () => {
       const { data, error } = await supabase
         .from('meals')
-        .select('id, name, recette, nationalite, image')
+        .select('id, name, recette, nationalite, image, hasMeat, meatType, origin')
 
       if (error) {
         console.error("Error fetching meals:", error)
-      } else {
-        setMeals(data)
+      } else if (data) {
+        const mealsWithScores = data.map(meal => ({ ...meal, preferenceScore: 0 }))
+        setMeals(mealsWithScores)
       }
     }
 
     fetchMeals()
   }, [])
 
-  const handleSwipe = (liked: boolean) => {
+  const handleSwipe = async (liked: boolean) => {
     if (meals.length > 0) {
-      console.log(liked ? "A aimé" : "N'a pas aimé", meals[currentIndex].name)
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % meals.length)
+      const updatedMeals = [...meals]
+      const currentMeal = updatedMeals[currentIndex]
+
+      if (liked) {
+        // Mettre à jour les préférences en fonction du plat liké
+        if (currentMeal.origin) {
+          preferences.origin.add(currentMeal.origin)
+        }
+        if (currentMeal.hasMeat !== null) {
+          preferences.hasMeat = currentMeal.hasMeat
+        }
+        if (currentMeal.meatType) {
+          preferences.meatTypes.add(currentMeal.meatType)
+        }
+
+        setPreferences({ ...preferences }) // Actualiser les préférences
+        setLikeCount(prevCount => prevCount + 1)
+
+        // Augmenter les scores des plats correspondant aux nouvelles préférences
+        updatedMeals.forEach(meal => {
+          if (preferences.origin.has(meal.origin)) meal.preferenceScore += 1
+          if (preferences.hasMeat === meal.hasMeat) meal.preferenceScore += 1
+          if (meal.meatType && preferences.meatTypes.has(meal.meatType)) meal.preferenceScore += 1
+        })
+      } else {
+        currentMeal.preferenceScore -= 1
+      }
+
+      // Logique pour basculer entre phase de découverte et recommandations basées sur les préférences
+      let nextIndex: number
+      if (isInitialDiscovery) {
+        // En phase de découverte, proposer des plats aléatoires
+        nextIndex = Math.floor(Math.random() * meals.length)
+        // Terminer la découverte après 10 interactions
+        if (likeCount >= 9) {
+          setIsInitialDiscovery(false) // Basculer vers la phase de recommandations basées sur les préférences
+          setLikeCount(0) // Réinitialiser le compteur de likes
+        }
+      } else {
+        // Mode de recommandation basé sur les préférences avec affichage aléatoire tous les 4 likes
+        if (likeCount + 1 === 4) {
+          setLikeCount(0) // Réinitialiser le compteur
+          nextIndex = Math.floor(Math.random() * meals.length)
+        } else {
+          // Tri des plats en fonction du score de préférence
+          const sortedMeals = updatedMeals.sort((a, b) => b.preferenceScore - a.preferenceScore)
+          setMeals(sortedMeals)
+          nextIndex = (currentIndex + 1) % meals.length
+        }
+      }
+
+      setCurrentIndex(nextIndex)
+
+      // Mise à jour de la base de données pour les scores modifiés
+      const updates = updatedMeals
+        .filter(meal => meal.preferenceScore !== meals.find(m => m.id === meal.id)?.preferenceScore)
+        .map(async meal => {
+          const { error } = await supabase
+            .from('meals')
+            .update({ preferenceScore: meal.preferenceScore })
+            .eq('id', meal.id)
+
+          if (error) {
+            console.error(`Erreur lors de la mise à jour du score de préférence pour ${meal.name}:`, error)
+          }
+        })
+
+      await Promise.all(updates)
     }
   }
 
   if (meals.length === 0) {
     return <div>Loading...</div> 
   }
-  console.log(meals[currentIndex].image)
 
   return (
     <Card className="w-full max-w-sm">
@@ -60,7 +137,8 @@ export default function MealLike() {
         <div className="p-4">
           <h2 className="text-2xl font-bold mb-2">{meals[currentIndex].name}</h2>
           <p className="text-sm text-gray-600 mb-4">{meals[currentIndex].recette.description}</p>
-          <p className="text-xs text-gray-500 mb-4">{meals[currentIndex].nationalite}</p>
+          <p className="text-xs text-gray-500 mb-4">{meals[currentIndex].origin}</p>
+          <p className="text-sm text-blue-600 font-semibold mb-4">Score de préférence : {meals[currentIndex].preferenceScore}</p>
           <div className="flex justify-center gap-4 mt-4">
             <Button 
               variant="outline" 
