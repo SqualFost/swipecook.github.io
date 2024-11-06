@@ -16,6 +16,7 @@ export default function AuthForm() {
   const [lastName, setLastName] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [isLogin, setIsLogin] = useState<boolean>(true)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null) // Nouveau état pour message de succès
   const router = useRouter()
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -35,20 +36,30 @@ export default function AuthForm() {
         router.push('/')
       }
     } else {
-      const { error } = await supabase.auth.signUp({ 
-        email, 
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
         password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName
-          }
-        }
       })
-      if (error) {
-        setError(error.message)
-      } else {
-        setError("Vérifiez votre email pour confirmer votre inscription.")
+
+      if (signUpError) {
+        setError(signUpError.message)
+      } else if (signUpData.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: signUpData.user.id,
+            first_name: firstName,
+            last_name: lastName,
+          })
+
+        if (profileError) {
+          setError(profileError.message)
+        } else {
+          setSuccessMessage("Inscription réussie avec succès !")
+          setTimeout(() => {
+            router.refresh()
+          }, 2000)
+        }
       }
     }
   }
@@ -136,6 +147,7 @@ export default function AuthForm() {
                 {isLogin ? 'Se connecter' : "S'inscrire"}
               </Button>
               {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+              {successMessage && <p className="text-green-500 text-center mt-2">{successMessage}</p>} {/* Affichage du message de succès */}
             </form>
             <div className="mt-4 text-center">
               <Button variant="link" onClick={toggleAuthMode}>

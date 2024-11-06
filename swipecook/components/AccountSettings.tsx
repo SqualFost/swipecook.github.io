@@ -4,7 +4,6 @@ import Header from '@/components/Compte/Header'
 import AccountForm from '@/components/Compte/AccountForm'
 import DietaryPreferences from '@/components/Compte/DietaryPreferences'
 import AppPreferences from '@/components/Compte/AppPreferences'
-import Navbar from '@/components/Navbar'
 import { Button } from "@/components/ui/button"
 
 export default function AccountSettings() {
