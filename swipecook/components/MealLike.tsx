@@ -12,13 +12,11 @@ type Recipe = {
 type Meal = {
   id: number;
   name: string;
-  nationalite: string;
+  nationalite: string; // Changement de "origin" à "nationalite"
   recette: Recipe;
   image: string;
   preferenceScore: number; // Score de préférence
-  hasMeat: boolean; // Indique si le plat contient de la viande
-  meatType: string | null; // Type de viande utilisé (ex: "boeuf", "poulet", "poisson")
-  origin: string; // Origine du plat (ex: "Italien", "Mexicain")
+  meat: boolean; // Indique si le plat contient de la viande
 }
 
 export default function MealLike() {
@@ -26,9 +24,8 @@ export default function MealLike() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [likeCount, setLikeCount] = useState(0) // Compteur de likes
   const [preferences, setPreferences] = useState({
-    origin: new Set<string>(),
-    hasMeat: null as boolean | null,
-    meatTypes: new Set<string>()
+    nationalite: new Set<string>(), // Mise à jour de "origin" à "nationalite"
+    meat: null as boolean | null
   })
   const [isInitialDiscovery, setIsInitialDiscovery] = useState(true) // Phase de découverte initiale
 
@@ -36,7 +33,7 @@ export default function MealLike() {
     const fetchMeals = async () => {
       const { data, error } = await supabase
         .from('meals')
-        .select('id, name, recette, nationalite, image, hasMeat, meatType, origin')
+        .select('id, name, recette, nationalite, image, meat') // Mise à jour du champ "origin" à "nationalite"
 
       if (error) {
         console.error("Error fetching meals:", error)
@@ -56,14 +53,11 @@ export default function MealLike() {
 
       if (liked) {
         // Mettre à jour les préférences en fonction du plat liké
-        if (currentMeal.origin) {
-          preferences.origin.add(currentMeal.origin)
+        if (currentMeal.nationalite) { // Mise à jour de "origin" à "nationalite"
+          preferences.nationalite.add(currentMeal.nationalite)
         }
-        if (currentMeal.hasMeat !== null) {
-          preferences.hasMeat = currentMeal.hasMeat
-        }
-        if (currentMeal.meatType) {
-          preferences.meatTypes.add(currentMeal.meatType)
+        if (currentMeal.meat !== null) {
+          preferences.meat = currentMeal.meat
         }
 
         setPreferences({ ...preferences }) // Actualiser les préférences
@@ -71,9 +65,8 @@ export default function MealLike() {
 
         // Augmenter les scores des plats correspondant aux nouvelles préférences
         updatedMeals.forEach(meal => {
-          if (preferences.origin.has(meal.origin)) meal.preferenceScore += 1
-          if (preferences.hasMeat === meal.hasMeat) meal.preferenceScore += 1
-          if (meal.meatType && preferences.meatTypes.has(meal.meatType)) meal.preferenceScore += 1
+          if (preferences.nationalite.has(meal.nationalite)) meal.preferenceScore += 1 // Mise à jour de "origin" à "nationalite"
+          if (preferences.meat === meal.meat) meal.preferenceScore += 1
         })
       } else {
         currentMeal.preferenceScore -= 1
@@ -137,7 +130,7 @@ export default function MealLike() {
         <div className="p-4">
           <h2 className="text-2xl font-bold mb-2">{meals[currentIndex].name}</h2>
           <p className="text-sm text-gray-600 mb-4">{meals[currentIndex].recette.description}</p>
-          <p className="text-xs text-gray-500 mb-4">{meals[currentIndex].origin}</p>
+          <p className="text-xs text-gray-500 mb-4">{meals[currentIndex].nationalite}</p> {/* Mise à jour de "origin" à "nationalite" */}
           <p className="text-sm text-blue-600 font-semibold mb-4">Score de préférence : {meals[currentIndex].preferenceScore}</p>
           <div className="flex justify-center gap-4 mt-4">
             <Button 
