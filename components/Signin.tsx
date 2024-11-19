@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter } from 'next/navigation'
 import supabase from '@/lib/supabaseClient'
+import { useAuth } from '@/components/AuthContext'
 
 export default function AuthForm() {
   const [email, setEmail] = useState<string>('')
@@ -16,8 +17,9 @@ export default function AuthForm() {
   const [lastName, setLastName] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [isLogin, setIsLogin] = useState<boolean>(true)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null) // Nouveau état pour message de succès
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,6 +35,7 @@ export default function AuthForm() {
       if (error) {
         setError(error.message)
       } else {
+        login() // Utilise la fonction login du contexte d'authentification
         router.push('/')
       }
     } else {
@@ -57,11 +60,17 @@ export default function AuthForm() {
         } else {
           setSuccessMessage("Inscription réussie avec succès !")
           setTimeout(() => {
+            login() // Connecte l'utilisateur après une inscription réussie
             router.refresh()
           }, 2000)
         }
       }
     }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('Settings saved')
   }
 
   const toggleAuthMode = () => {
@@ -147,7 +156,7 @@ export default function AuthForm() {
                 {isLogin ? 'Se connecter' : "S'inscrire"}
               </Button>
               {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-              {successMessage && <p className="text-green-500 text-center mt-2">{successMessage}</p>} {/* Affichage du message de succès */}
+              {successMessage && <p className="text-green-500 text-center mt-2">{successMessage}</p>}
             </form>
             <div className="mt-4 text-center">
               <Button variant="link" onClick={toggleAuthMode}>

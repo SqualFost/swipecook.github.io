@@ -1,9 +1,11 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { useState } from 'react'
+import { Switch } from "@/components/ui/switch"
 
 export default function DietaryPreferences() {
   const [dietaryPreference, setDietaryPreference] = useState('omnivore')
+  const [notifications, setNotifications] = useState(true)
 
   return (
     <section className="space-y-4">
@@ -21,6 +23,14 @@ export default function DietaryPreferences() {
             <SelectItem value="pescatarian">Pescétarien</SelectItem>
           </SelectContent>
         </Select>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="notifications">Notifications</Label>
+          <Switch
+            id="notifications"
+            checked={notifications}
+            onCheckedChange={setNotifications}
+          />
+        </div>
       </div>
     </section>
   )
