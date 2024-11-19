@@ -11,6 +11,7 @@ type Meal = {
   id: number
   name: string
   nationalite: string
+  image: string // Nouveau champ pour l'image
 }
 
 export default function MealSearch() {
@@ -18,13 +19,12 @@ export default function MealSearch() {
   const [recommendations, setRecommendations] = useState<Meal[]>([])
   const [loading, setLoading] = useState(true)
 
-
   useEffect(() => {
     const fetchMeals = async () => {
       setLoading(true)
       const { data, error } = await supabase
         .from('meals')
-        .select('*')
+        .select('id, name, nationalite, image') // Récupération du champ image
   
       if (error) {
         console.error("Erreur lors de la récupération des repas :", error)
@@ -69,9 +69,18 @@ export default function MealSearch() {
             <div className="space-y-2 pb-20">
               {filteredMeals.map((meal) => (
                 <Card key={meal.id}>
-                  <CardContent className="p-4">
-                    <h2 className="text-lg font-semibold">{meal.name}</h2>
-                    <p className="text-sm text-muted-foreground">{meal.nationalite}</p>
+                  <CardContent className="flex items-center space-x-4 p-4">
+                    {/* Image du repas */}
+                    <img
+                      src={meal.image}
+                      alt={meal.name}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    {/* Infos texte */}
+                    <div>
+                      <h2 className="text-lg font-semibold">{meal.name}</h2>
+                      <p className="text-sm text-muted-foreground">{meal.nationalite}</p>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
