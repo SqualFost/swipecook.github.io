@@ -90,10 +90,10 @@ export default function PostRecipe() {
 
       // Étape 3 : Insertion des données dans la table 'meal'
       const { error } = await supabase
-        .from('meals') // Nom de la table
+        .from('meals-pending') // Nom de la table
         .insert([
           {
-            id: 51,
+            id: 52,
             name,
             nationalite: nationality,
             recette: JSON.stringify({ // Met les ingrédients et les étapes dans la même colonne

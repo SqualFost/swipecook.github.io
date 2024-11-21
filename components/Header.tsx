@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "./ui/button"
-import { LogIn, LogOut } from "lucide-react"
+import { LogIn, LogOut, Bell} from "lucide-react"
 import supabase from '@/lib/supabaseClient'
 import { useAuth } from '@/components/AuthContext'
+import Link from 'next/link'
 
 export default function Header() {
     const { isLoggedIn, login, logout } = useAuth()
+    const [isAdmin, setIsAdmin] = useState(false)
     const router = useRouter()
 
     useEffect(() => {
@@ -16,6 +18,19 @@ export default function Header() {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
                 login()
+
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('isAdmin')
+                    .eq('id', user.id)
+                    .single()
+
+                if (error) {
+                    console.error("Erreur lors de la récupération des données utilisateur:", error)
+                    setIsAdmin(false)
+                } else {
+                    setIsAdmin(data?.isAdmin || false)
+                }
             } else {
                 logout()
             }
@@ -26,6 +41,7 @@ export default function Header() {
         const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
             if (session) {
                 login()
+                checkUser()
             } else {
                 logout()
             }
@@ -53,23 +69,36 @@ export default function Header() {
     return (
         <header className="flex items-center justify-between pt-4 ps-4 pe-4">
             <h1 className="text-2xl font-bold">Swipe&Cook</h1>
-            <Button 
-                variant="outline" 
-                className="flex items-center gap-2"
-                onClick={handleAuthAction}
-            >
-                {isLoggedIn ? (
-                    <>
-                        <LogOut className="h-5 w-5" />
-                        <span>Se déconnecter</span>
-                    </>
-                ) : (
-                    <>
-                        <LogIn className="h-5 w-5" />
-                        <span>Se connecter</span>
-                    </>
+            <div className='flex gap-8'>
+                {isLoggedIn && isAdmin && (
+                    <Link href='/validation'>
+                        <Button 
+                            variant="outline" 
+                            className="flex items-center gap-2"
+                        >
+                            <Bell className="h-5 w-5" />
+                            <span>Notifications</span>
+                        </Button>
+                    </Link>
                 )}
-            </Button>
+                <Button 
+                    variant="outline" 
+                    className="flex items-center gap-2"
+                    onClick={handleAuthAction}
+                >
+                    {isLoggedIn ? (
+                        <>
+                            <LogOut className="h-5 w-5" />
+                            <span>Se déconnecter</span>
+                        </>
+                    ) : (
+                        <>
+                            <LogIn className="h-5 w-5" />
+                            <span>Se connecter</span>
+                        </>
+                    )}
+                </Button>
+            </div>
         </header>
     )
 }
