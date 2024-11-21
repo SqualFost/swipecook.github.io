@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Search } from "lucide-react"
 import supabase from '@/lib/supabaseClient'
+import Image from 'next/image'
 
 type Meal = {
   id: number
   name: string
   nationalite: string
+  image: string
 }
 
 export default function MealSearch() {
@@ -18,13 +20,12 @@ export default function MealSearch() {
   const [recommendations, setRecommendations] = useState<Meal[]>([])
   const [loading, setLoading] = useState(true)
 
-
   useEffect(() => {
     const fetchMeals = async () => {
       setLoading(true)
       const { data, error } = await supabase
         .from('meals')
-        .select('*')
+        .select('id, name, nationalite, image')
   
       if (error) {
         console.error("Erreur lors de la récupération des repas :", error)
@@ -69,9 +70,17 @@ export default function MealSearch() {
             <div className="space-y-2 pb-20">
               {filteredMeals.map((meal) => (
                 <Card key={meal.id}>
-                  <CardContent className="p-4">
-                    <h2 className="text-lg font-semibold">{meal.name}</h2>
-                    <p className="text-sm text-muted-foreground">{meal.nationalite}</p>
+                  <CardContent className="flex items-center space-x-4 p-4">
+                    <Image
+                    src={meal.image}
+                    alt={meal.name}
+                    width={100}
+                    height={10}
+                    className='rounded'/>
+                    <div>
+                      <h2 className="text-lg font-semibold">{meal.name}</h2>
+                      <p className="text-sm text-muted-foreground">{meal.nationalite}</p>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
