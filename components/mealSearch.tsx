@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Search } from "lucide-react"
 import supabase from '@/lib/supabaseClient'
+import Image from 'next/image'
 
 type Meal = {
   id: number
   name: string
   nationalite: string
-  image: string // Nouveau champ pour l'image
+  image: string
 }
 
 export default function MealSearch() {
@@ -24,7 +25,7 @@ export default function MealSearch() {
       setLoading(true)
       const { data, error } = await supabase
         .from('meals')
-        .select('id, name, nationalite, image') // Récupération du champ image
+        .select('id, name, nationalite, image')
   
       if (error) {
         console.error("Erreur lors de la récupération des repas :", error)
@@ -70,13 +71,12 @@ export default function MealSearch() {
               {filteredMeals.map((meal) => (
                 <Card key={meal.id}>
                   <CardContent className="flex items-center space-x-4 p-4">
-                    {/* Image du repas */}
-                    <img
-                      src={meal.image}
-                      alt={meal.name}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                    {/* Infos texte */}
+                    <Image
+                    src={meal.image}
+                    alt={meal.name}
+                    width={100}
+                    height={10}
+                    className='rounded'/>
                     <div>
                       <h2 className="text-lg font-semibold">{meal.name}</h2>
                       <p className="text-sm text-muted-foreground">{meal.nationalite}</p>

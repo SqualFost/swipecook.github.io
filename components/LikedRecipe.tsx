@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Search, X } from "lucide-react"
 import supabase from '@/lib/supabaseClient'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type Recipe = {
   description: string;
@@ -98,7 +99,13 @@ export default function LikedRecipes() {
                 onMouseEnter={() => setHoveredRecipe(recipe.id)}
                 onMouseLeave={() => setHoveredRecipe(null)}
               >
-                <img src={recipe.image} alt={recipe.name} className="w-full h-48 object-cover" />
+                <Image
+                  src={recipe.image}
+                  alt={recipe.name}
+                  className='w-full h-48 object-cover'
+                  width={500}
+                  height={48}  
+                />
                 {hoveredRecipe === recipe.id && (
                   <Button
                     variant="destructive"

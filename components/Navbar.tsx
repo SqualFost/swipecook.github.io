@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Home, Search, User, Heart } from "lucide-react"
+import { Home, Search, User, Heart, SquarePlus } from "lucide-react"
 import Link from 'next/link'
 
 export default function Navbar() {
@@ -15,6 +15,11 @@ export default function Navbar() {
             <Link href="/search">
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Search className="h-6 w-6" />
+              </Button>
+            </Link>
+            <Link href="/post">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <SquarePlus className="h-6 w-6" />
               </Button>
             </Link>
             <Link href="/likes">

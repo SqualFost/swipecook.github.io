@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { X, Heart } from 'lucide-react'
 import supabase from '@/lib/supabaseClient'
+import Image from 'next/image'
 
 type Recipe = {
   description: string;
@@ -109,11 +110,13 @@ export default function MealLike() {
         <Card className="w-[500px] transition-all duration-300 ease-in-out">
           <CardContent className="p-0">
             <div className="relative pt-[75%]">
-              <img 
+              <Image
                 src={currentMeal.image}
-                alt={currentMeal.name} 
-                className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
-              />
+                alt={currentMeal.name}
+                width={500}
+                height={500}
+                className='absolute inset-0 w-full h-full object-cover rounded-t-lg'
+                />
             </div>
             <div className="p-6">
               <h2 className="text-xl font-bold mb-2">{currentMeal.name}</h2>
