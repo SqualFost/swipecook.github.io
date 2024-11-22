@@ -35,7 +35,7 @@ export default function AuthForm() {
       if (error) {
         setError(error.message)
       } else {
-        login() // Utilise la fonction login du contexte d'authentification
+        login()
         router.push('/')
       }
     } else {
@@ -60,17 +60,12 @@ export default function AuthForm() {
         } else {
           setSuccessMessage("Inscription réussie avec succès !")
           setTimeout(() => {
-            login() // Connecte l'utilisateur après une inscription réussie
+            login()
             router.refresh()
           }, 2000)
         }
       }
     }
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Settings saved')
   }
 
   const toggleAuthMode = () => {
@@ -168,4 +163,4 @@ export default function AuthForm() {
       </main>
     </div>
   )
-}
+} 

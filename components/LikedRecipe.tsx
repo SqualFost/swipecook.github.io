@@ -23,6 +23,10 @@ type Meal = {
   image: string
 }
 
+type LikedRecipe = {
+  meals: Meal[]
+}
+
 export default function LikedRecipes() {
   const [recipes, setRecipes] = useState<Meal[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -47,7 +51,8 @@ export default function LikedRecipes() {
         console.error('Error fetching liked recipes:', error)
         alert('Une erreur est survenue lors du chargement des recettes.')
       } else {  
-        setRecipes(data.map((item: any) => item.meals))
+        const likedRecipes = data as LikedRecipe[];
+        setRecipes(likedRecipes.flatMap(item => item.meals))
       }
     }
   }

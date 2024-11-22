@@ -18,7 +18,6 @@ export default function PostRecipe() {
   const [steps, setSteps] = useState([''])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Gestion de l'image
   const handleImageClick = () => {
     fileInputRef.current?.click()
   }
@@ -34,7 +33,6 @@ export default function PostRecipe() {
     }
   }
 
-  // Gestion dynamique des listes (ingrédients et étapes)
   const addItem = (list: string[], setList: (value: string[]) => void) => {
     setList([...list, ''])
   }
@@ -50,7 +48,6 @@ export default function PostRecipe() {
     setList(newList)
   }
 
-  // Conversion de l'image Base64 en Blob
   const dataURLtoBlob = (dataURL: string) => {
     const parts = dataURL.split(';base64,')
     const byteString = atob(parts[1])
@@ -63,7 +60,6 @@ export default function PostRecipe() {
     return new Blob([ab], { type: mimeString })
   }
 
-  // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -73,10 +69,9 @@ export default function PostRecipe() {
     }
 
     try {
-      // Étape 1 : Upload de l'image
       const fileName = `${Date.now()}-${name}.jpeg`
       const { data: imageUpload, error: uploadError } = await supabase.storage
-        .from('recipe-img') // Nom du bucket Supabase
+        .from('recipe-img')
         .upload(fileName, dataURLtoBlob(image))
 
       if (uploadError) {
@@ -85,22 +80,20 @@ export default function PostRecipe() {
         return
       }
 
-      // Étape 2 : Récupération de l'URL publique de l'image
       const imageUrl = supabase.storage.from('recipe-img').getPublicUrl(fileName).data.publicUrl
 
-      // Étape 3 : Insertion des données dans la table 'meal'
       const { error } = await supabase
-        .from('meals-pending') // Nom de la table
+        .from('meals-pending')
         .insert([
           {
             id: 52,
             name,
             nationalite: nationality,
-            recette: JSON.stringify({ // Met les ingrédients et les étapes dans la même colonne
+            recette: JSON.stringify({
               ingredients: ingredients,
               description: steps,
             }),
-            image: imageUrl, // URL de l'image
+            image: imageUrl,
           }
         ])
 
@@ -109,7 +102,6 @@ export default function PostRecipe() {
         alert("Une erreur est survenue lors de l'enregistrement de la recette.")
       } else {
         alert("Recette ajoutée avec succès !")
-        // Réinitialisation du formulaire
         setName('')
         setNationality('')
         setIngredients([''])
@@ -127,7 +119,6 @@ export default function PostRecipe() {
       <main className="flex-grow p-4">
         <h1 className="text-2xl font-bold mb-4">Publier une Recette</h1>
         <form onSubmit={handleSubmit} className="space-y-6 mb-20">
-          {/* Image */}
           <Card className="w-full max-w-md mx-auto cursor-pointer" onClick={handleImageClick}>
             <CardContent className="relative w-full h-64 rounded overflow-hidden">
               {image ? (
@@ -142,13 +133,11 @@ export default function PostRecipe() {
           </Card>
           <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
 
-          {/* Nom */}
           <div className="space-y-2">
             <Label htmlFor="name">Nom de la recette</Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Entrez le nom de la recette" />
           </div>
 
-          {/* Nationalité */}
           <div className="space-y-2">
             <Label htmlFor="nationality">Nationalité</Label>
             <Input
@@ -159,7 +148,6 @@ export default function PostRecipe() {
             />
           </div>
 
-          {/* Ingrédients */}
           <div className="space-y-2">
             <Label>Ingrédients</Label>
             {ingredients.map((ingredient, index) => (
@@ -182,7 +170,6 @@ export default function PostRecipe() {
             </Button>
           </div>
 
-          {/* Étapes */}
           <div className="space-y-2">
             <Label>Étapes de la recette</Label>
             {steps.map((step, index) => (
@@ -205,7 +192,6 @@ export default function PostRecipe() {
             </Button>
           </div>
 
-          {/* Soumission */}
           <Button type="submit" className="w-full mb-20">
             Publier la recette
           </Button>
