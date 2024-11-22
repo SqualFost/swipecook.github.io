@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Check, X } from 'lucide-react'
 import supabase from '@/lib/supabaseClient'
+import Image from 'next/image'
 
 type Recipe = {
     description: string;
@@ -109,6 +110,13 @@ export default function AdminPendingMeals() {
               </CardHeader>
               <CardContent>
                 <img src={meal.image} alt={meal.name} className="w-full h-48 object-cover rounded-md mb-2" />
+                <Image
+                  src={meal.image}
+                  alt={meal.name}
+                  width={500}
+                  height={48}
+                  className='w-full h-48 object-cover rounded-md mb-2'
+                />
                 {editingMeal?.id === meal.id ? (
                   <div className="space-y-2">
                     <Label htmlFor={`name-${meal.id}`}>Nom</Label>
