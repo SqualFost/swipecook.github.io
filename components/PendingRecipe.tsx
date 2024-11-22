@@ -109,7 +109,6 @@ export default function AdminPendingMeals() {
                 <CardTitle>{meal.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <img src={meal.image} alt={meal.name} className="w-full h-48 object-cover rounded-md mb-2" />
                 <Image
                   src={meal.image}
                   alt={meal.name}
