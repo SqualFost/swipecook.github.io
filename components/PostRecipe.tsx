@@ -61,58 +61,65 @@ export default function PostRecipe() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+    e.preventDefault();
+  
     if (!name || !nationality || ingredients.length === 0 || steps.length === 0 || !image) {
-      alert("Veuillez remplir tous les champs et ajouter une image.")
-      return
+      alert("Veuillez remplir tous les champs et ajouter une image.");
+      return;
     }
-
+  
     try {
-      const fileName = `${Date.now()}-${name}.jpeg`
+      const fileName = `${Date.now()}-${name}.jpeg`;
       const { data: imageUpload, error: uploadError } = await supabase.storage
         .from('recipe-img')
-        .upload(fileName, dataURLtoBlob(image))
-
+        .upload(fileName, dataURLtoBlob(image));
+  
       if (uploadError) {
-        console.error("Erreur d'upload de l'image :", uploadError.message)
-        alert("Une erreur est survenue lors du téléchargement de l'image.")
-        return
+        console.error("Erreur d'upload de l'image :", uploadError.message);
+        alert("Une erreur est survenue lors du téléchargement de l'image.");
+        return;
       }
-
-      const imageUrl = supabase.storage.from('recipe-img').getPublicUrl(fileName).data.publicUrl
-
+  
+      const imageUrl = supabase.storage.from('recipe-img').getPublicUrl(fileName).data.publicUrl;
+  
+      // Transformation des données avant l'insertion
+      const formattedRecipe = {
+        description: steps.join(" "), // Convertir le tableau `steps` en une chaîne
+        ingredients: ingredients.filter((ingredient) => ingredient.trim() !== ""), // Supprimer les ingrédients vides
+      };
+  
       const { error } = await supabase
         .from('meals-pending')
         .insert([
           {
-            id: 52,
             name,
             nationalite: nationality,
-            recette: JSON.stringify({
-              ingredients: ingredients,
-              description: steps,
-            }),
+            recette: JSON.stringify(formattedRecipe, null, 2), // Beautifier avec une indentation de 2 espaces // Formater correctement en JSON
             image: imageUrl,
-          }
-        ])
-
+          },
+        ]);
+      console.log(
+        "Recette formatée :",
+        JSON.stringify(formattedRecipe, null, 2) // Beautifier avec une indentation de 2 espaces
+      );
+  
       if (error) {
-        console.error("Erreur lors de l'insertion de la recette :", error.message)
-        alert("Une erreur est survenue lors de l'enregistrement de la recette.")
+        console.error("Erreur lors de l'insertion de la recette :", error.message);
+        alert("Une erreur est survenue lors de l'enregistrement de la recette.");
       } else {
-        alert("Recette ajoutée avec succès !")
-        setName('')
-        setNationality('')
-        setIngredients([''])
-        setSteps([''])
-        setImage(null)
+        alert("Recette ajoutée avec succès !");
+        setName('');
+        setNationality('');
+        setIngredients(['']);
+        setSteps(['']);
+        setImage(null);
       }
     } catch (error) {
-      console.error("Erreur inconnue :", error)
-      alert("Une erreur inconnue est survenue.")
+      console.error("Erreur inconnue :", error);
+      alert("Une erreur inconnue est survenue.");
     }
-  }
+  };
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
