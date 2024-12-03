@@ -94,7 +94,7 @@ export default function PostRecipe() {
           {
             name,
             nationalite: nationality,
-            recette: JSON.stringify(formattedRecipe, null, 2), // Beautifier avec une indentation de 2 espaces // Formater correctement en JSON
+            recette: formattedRecipe, // Beautifier avec une indentation de 2 espaces // Formater correctement en JSON
             image: imageUrl,
           },
         ]);
