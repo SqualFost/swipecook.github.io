@@ -10,7 +10,7 @@ import Image from 'next/image'
 type Recipe = {
   description: string;
   ingredients: string[];
-  etapes: string;
+  etapes: string[];
 }
 
 type Meal = {
