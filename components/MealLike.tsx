@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { X, Heart } from 'lucide-react'
+import { X, Heart} from 'lucide-react'
 import supabase from '@/lib/supabaseClient'
 import Image from 'next/image'
+import Link from 'next/link'
+
 
 type Recipe = {
   description: string;
@@ -130,7 +132,15 @@ export default function MealLike() {
   }
 
   if (meals.length === 0) {
-    return <div>Loading...</div>
+    return <div className='text-center py-10'>
+      <p className='text-xl font-semibold'>Connectez-vous pour voir les plats</p>
+      <Link href='/login'>
+        <Button size="lg" className='font-semibold'>
+          Se connecter
+        </Button>
+      </Link>
+    </div>
+
   }
 
   const currentMeal = meals[currentIndex]
@@ -141,6 +151,7 @@ export default function MealLike() {
         className="relative flex transition-all duration-300 ease-in-out"
         style={{ 
           width: isHovered ? '1000px' : '500px',
+          height: '600px',
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
