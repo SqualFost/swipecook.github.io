@@ -102,7 +102,8 @@ export default function AdminPendingMeals() {
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow p-4">
         <h1 className="text-2xl font-bold mb-4">Recettes en attente de validation</h1>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {pendingMeals.length == 0 ? 
+        <p>Pas de recette en attente de validation </p>: <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {pendingMeals.map(meal => (
             <Card key={meal.id}>
               <CardHeader>
@@ -166,7 +167,7 @@ export default function AdminPendingMeals() {
               </CardFooter>
             </Card>
           ))}
-        </div>
+        </div>}
       </main>
     </div>
   )
